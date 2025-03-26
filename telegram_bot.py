@@ -244,13 +244,8 @@ def main():
     # Iniciar o bot
     print('🤖 Bot iniciado!')
     
-    # Configuração para o Railway
-    port = int(os.environ.get('PORT', 8443))
-    application.run_webhook(
-        listen='0.0.0.0',
-        port=port,
-        webhook_url=f'https://bot-financeiro-production.up.railway.app/'
-    )
+    # Usar polling em vez de webhook
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
     main() 
