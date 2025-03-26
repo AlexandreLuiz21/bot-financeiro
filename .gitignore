@@ -3,8 +3,10 @@
 *.json
 __pycache__/
 *.pyc
+token*.txt
 
-# Ambiente virtual (caso decida usar no futuro)
+# Ambiente virtual
+env-botfinanceiro/
 venv/
 env/
 .venv/
