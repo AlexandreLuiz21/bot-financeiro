@@ -243,7 +243,15 @@ def main():
 
     # Iniciar o bot
     print('🤖 Bot iniciado!')
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    
+    # Configuração para o Railway
+    port = int(os.environ.get('PORT', 5000))
+    application.run_webhook(
+        listen='0.0.0.0',
+        port=port,
+        url_path=os.getenv('TELEGRAM_BOT_TOKEN'),
+        webhook_url=f'https://athletic-enchantment-production.up.railway.app/{os.getenv("TELEGRAM_BOT_TOKEN")}'
+    )
 
 if __name__ == '__main__':
     main() 
