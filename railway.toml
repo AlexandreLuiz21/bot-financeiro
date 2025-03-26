@@ -1,6 +1,9 @@
 [build]
 builder = "nixpacks"
+buildCommand = "pip install -r requirements.txt"
 
 [deploy]
 startCommand = "python telegram_bot.py"
+healthcheckPath = "/"
+healthcheckTimeout = 100
 restartPolicyType = "on_failure" 
