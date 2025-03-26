@@ -150,30 +150,40 @@ def atualizar_resumo_mensal():
         print(f"❌ Erro ao atualizar resumo mensal: {e}")
 
 def registrar_gasto_telegram(valor, descricao, categoria, tipo='despesa'):
-    """Registra um gasto ou receita na planilha via Telegram."""
+    """Registra um gasto na planilha a partir de uma mensagem do Telegram."""
     try:
+        print(f"🔄 Tentando registrar {tipo} no Google Sheets...")
+        print(f"💰 Valor: {valor}")
+        print(f"📝 Descrição: {descricao}")
+        print(f"📂 Categoria: {categoria}")
+        
+        # Conectar ao Google Sheets
+        client = conectar_google_sheets()
+        if client is None:
+            raise Exception("Não foi possível conectar ao Google Sheets")
+        
+        # Abrir a planilha correta baseado no tipo
+        sheet_name = config.RECEITAS_SHEET_NAME if tipo == 'receita' else config.DESPESAS_SHEET_NAME
+        sheet = obter_planilha(sheet_name)
+        if sheet is None:
+            raise Exception(f"Não foi possível acessar a aba '{sheet_name}'")
+        
+        # Formatar o valor (positivo para receitas, negativo para despesas)
+        valor_formatado = abs(valor) if tipo == 'receita' else -abs(valor)
+        
+        # Obter a data atual
         data_atual = datetime.now().strftime("%d/%m/%Y")
         
-        # Escolhe a aba correta baseado no tipo
-        if tipo == 'receita':
-            sheet = obter_planilha(config.RECEITAS_SHEET_NAME)
-            if sheet is None:
-                return False
-            # Registra na aba Receitas
-            sheet.append_row([data_atual, categoria, descricao, valor])
-        else:
-            sheet = obter_planilha(config.DESPESAS_SHEET_NAME)
-            if sheet is None:
-                return False
-            # Registra na aba Despesas
-            sheet.append_row([data_atual, categoria, descricao, valor])
+        # Registrar na planilha
+        print(f"📊 Registrando na planilha: {sheet_name}")
+        sheet.append_row([data_atual, descricao, valor_formatado, categoria])
         
-        # Atualiza o Resumo Mensal
-        return atualizar_resumo_mensal(valor, categoria, tipo)
+        print("✅ Registro concluído com sucesso!")
+        return True
         
     except Exception as e:
-        print(f"❌ Erro ao registrar transação: {str(e)}")
-        return False
+        print(f"❌ Erro ao registrar {tipo}: {str(e)}")
+        raise
 
 def atualizar_resumo_mensal(valor, categoria, tipo):
     """Atualiza o resumo mensal com a nova transação."""
